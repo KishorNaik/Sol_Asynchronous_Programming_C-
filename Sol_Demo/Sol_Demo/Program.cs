@@ -27,6 +27,8 @@ namespace Sol_Demo
                 Console.WriteLine(fullName);
 
                 await asyncDemoObj.LongRunningTask();
+
+                await asyncDemoObj.LongRunningParallelism();
             }).Wait();
         }
     }
@@ -71,7 +73,7 @@ namespace Sol_Demo
             return new ValueTask<string>(fullName);
         }
 
-        // Long Running Task (It will create a thread) (Paralasim)
+        // Long Running Task (It will create a thread) (Parallelism)
         public Task LongRunningTask()
         {
             return Task.Factory.StartNew(() =>
@@ -79,5 +81,18 @@ namespace Sol_Demo
                 Console.WriteLine("Long Running Task");
             }, TaskCreationOptions.LongRunning);
         }
+
+        public Task LongRunningParallelism()
+        {
+            Parallel.Invoke(
+                () => { Console.WriteLine("Task 1"); },
+                () => { Console.WriteLine("Task 2"); },
+                () => { Console.WriteLine("Task 3"); }
+                );
+
+            return Task.CompletedTask;
+        }
+
+
     }
 }
