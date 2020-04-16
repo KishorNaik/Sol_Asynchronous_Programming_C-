@@ -12,6 +12,11 @@ namespace Sol_Demo
             Task.Run(async () =>
             {
                 AsyncDemo asyncDemoObj = new AsyncDemo();
+
+                await asyncDemoObj.DemoOldAsync();
+
+                await asyncDemoObj.DemoNewAsync();
+
                 //string fullName = await asyncDemoObj.DemoOldAsync("Kishor", "Naik");
                 //Console.WriteLine(fullName);
 
@@ -28,7 +33,20 @@ namespace Sol_Demo
 
     public class AsyncDemo
     {
-        // Old Way
+        // Old Way (Task does not return) (It will not create a Thread) (Concurrency)
+        public Task DemoOldAsync()
+        {
+            return Task.Run(() => Console.WriteLine("Old Way"));
+        }
+
+        public Task DemoNewAsync()
+        {
+            Console.WriteLine("New way");
+            return Task.CompletedTask;
+        }
+
+
+        // Old Way (Task return) (It will not create a Thread) (Concurrency)
         public Task<string> DemoOldAsync(string firstName, string lastName)
         {
             // Old Way
@@ -38,7 +56,7 @@ namespace Sol_Demo
             });
         }
 
-        // New Way
+        // New Way (It will not create a thread) (Concurrency)
         public Task<String> DemoNewWay(string firstName, string lastName)
         {
             // New Way
@@ -46,14 +64,14 @@ namespace Sol_Demo
             return Task.FromResult<String>(fullName);
         }
 
-        // Value Task instead of Task
+        // Value Task instead of Task (It will not create a thread) (Concurrency)
         public ValueTask<String> DemoValueTask(string firstName, string lastName)
         {
             string fullName = $"{firstName} {lastName}";
             return new ValueTask<string>(fullName);
         }
 
-        // Long Running Task
+        // Long Running Task (It will create a thread) (Paralasim)
         public Task LongRunningTask()
         {
             return Task.Factory.StartNew(() =>
