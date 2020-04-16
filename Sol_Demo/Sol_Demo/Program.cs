@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Sol_Demo
@@ -29,6 +30,17 @@ namespace Sol_Demo
                 await asyncDemoObj.LongRunningTask();
 
                 await asyncDemoObj.LongRunningParallelism();
+
+                AsyncLoopDemo asyncLoopDemo = new AsyncLoopDemo();
+
+                await asyncLoopDemo.LoopAsync(new List<String>() { "Kishor", "Eshaan", "Deepika" });
+
+                var result = await asyncLoopDemo.LoopAsyncResult(new List<String>() { "Kishor", "Eshaan", "Deepika" });
+                foreach(var value in result)
+                {
+                    Console.WriteLine($"Item: {value}");
+                }
+
             }).Wait();
         }
     }
@@ -94,5 +106,46 @@ namespace Sol_Demo
         }
 
 
+    }
+
+    public class AsyncLoopDemo
+    {
+        private Task DoAsync(string Item)
+        {
+            Task.Delay(6000);
+            Console.WriteLine($"Item: {Item}");
+            return Task.CompletedTask;
+        }
+
+        public async Task LoopAsync(IEnumerable<string> thingsToLoop)
+        {
+            List<Task> listOfTasks = new List<Task>();
+
+            foreach (var thing in thingsToLoop)
+            {
+                listOfTasks.Add(DoAsync(thing));
+            }
+
+            await Task.WhenAll(listOfTasks);
+        }
+
+        private Task<string> DoAsyncResult(string item)
+        {
+            Task.Delay(1000);
+            return Task.FromResult(item);
+        }
+
+        //Method to iterate over collection and await DoAsyncResult
+        public  async Task<IEnumerable<string>> LoopAsyncResult(IEnumerable<string> thingsToLoop)
+        {
+            List<Task<string>> listOfTasks = new List<Task<string>>();
+
+            foreach (var thing in thingsToLoop)
+            {
+                listOfTasks.Add(DoAsyncResult(thing));
+            }
+
+            return await Task.WhenAll<string>(listOfTasks);
+        }
     }
 }
